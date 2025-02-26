@@ -7,6 +7,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlin.math.exp
 
 fun Route.expensesRouting() {
 
@@ -20,17 +21,19 @@ fun Route.expensesRouting() {
 
     get("/expenses/{id}") {
         val id = call.parameters["id"]?.toLongOrNull()
-        if(id == null || id  !in 0 until expenses.size) {
+        val expense = expenses.find {it.id == id}
+        if(id == null || expense == null) {
             call.respond(HttpStatusCode.NotFound, ErrorResponse("Expense not found"))
         }
         else{
-            call.respond(HttpStatusCode.OK, expenses[id.toInt()])
+            call.respond(HttpStatusCode.OK, expense)
         }
     }
 
     post("/expenses") {
-        val expense = call.receive<Expense>().copy(id = expenses.size.toLong() + 1)
-        expenses.add(expense)
+        val expense = call.receive<Expense>()
+        val maxId = expenses.maxOf {it.id} + 1
+        expenses.add(expense.copy(id = maxId))
         call.respond(HttpStatusCode.OK, "Expense added successfully")
     }
     put("expenses/{id}") {

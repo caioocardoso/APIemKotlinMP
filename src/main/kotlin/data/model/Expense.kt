@@ -14,7 +14,7 @@ val expenses = mutableListOf(
 
 @Serializable
 data class Expense(
-    val id: Long = expenses.size.toLong(),
+    val id: Long = -1,
     val amount: Double,
     val categoryName: String,
     val description: String
