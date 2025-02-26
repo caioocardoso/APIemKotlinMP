@@ -45,4 +45,15 @@ fun Route.expensesRouting() {
             call.respond(HttpStatusCode.OK, expenses[id.toInt()])
         }
     }
+
+    delete("expenses/{id}") {
+        val id = call.parameters["id"]?.toLongOrNull()
+        if(id == null || id  !in 0 until expenses.size) {
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("Expense not found"))
+        }
+        else{
+            expenses.removeIf { it.id == id}
+            call.respond(HttpStatusCode.OK, "Expense removed successfully")
+        }
+    }
 }
