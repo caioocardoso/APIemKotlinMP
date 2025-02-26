@@ -33,4 +33,16 @@ fun Route.expensesRouting() {
         expenses.add(expense)
         call.respond(HttpStatusCode.OK, "Expense added successfully")
     }
+    put("expenses/{id}") {
+        val id = call.parameters["id"]?.toLongOrNull()
+        val expense = call.receive<Expense>()
+        if(id == null || id  !in 0 until expenses.size) {
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("Expense not found"))
+        }
+        else{
+            val index = expenses.indexOfFirst { it.id == id }
+            expenses[index] = expense.copy(id = id)
+            call.respond(HttpStatusCode.OK, expenses[id.toInt()])
+        }
+    }
 }
